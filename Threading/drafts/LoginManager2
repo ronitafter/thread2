@@ -1,0 +1,54 @@
+package com.ronit.utils;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import com.ronit.enums.ClientType;
+import com.ronit.exceptions.CouponSystemException;
+import com.ronit.services.AdminService;
+import com.ronit.services.ClientService;
+import com.ronit.services.CompanyService;
+import com.ronit.services.CustomerServie;
+
+public class LoginManager2 {
+
+//		@Autowired
+	private ApplicationContext context;
+	
+	private AdminService adminService;
+	private CompanyService companyService;
+	private CustomerServie customerServie;
+
+	public ClientService login(String email, String passwaord, ClientType clientType) throws CouponSystemException {
+		ClientService clientService = null;
+		switch (clientType) {
+		case COMPANY:
+			clientService = context.getBean(CompanyService.class);
+			
+			if (this.companyService.login(email, passwaord)) {
+				return companyService;
+			} else {
+				throw new CouponSystemException("login as company failed");
+			}
+		case CUSTOMER:
+			if (this.customerServie.login(email, passwaord)) {
+				return customerServie;
+			} else {
+				throw new CouponSystemException("login as CUSTOMER failed");
+			}
+		case ADMINISTRATOR:
+			if (this.adminService.login(email, passwaord)) {
+				return adminService;
+			} else {
+				throw new CouponSystemException("login as ADMINISTRATOR failed");
+			}
+
+		default:
+			break;
+		}
+
+		return clientService;
+	}
+
+}

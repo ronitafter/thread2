@@ -1,0 +1,150 @@
+package com.ronit.services;
+
+import java.sql.Date;
+
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.transaction.annotation.Transactional;
+
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
+
+import com.ronit.entities.Company;
+import com.ronit.entities.Coupon;
+import com.ronit.enums.Category;
+import com.ronit.exceptions.CouponSystemException;
+
+@Service
+@Scope("prototype")
+@Transactional(rollbackFor = CouponSystemException.class )
+public class CompanyService extends ClientService {
+
+	private int companyId;
+
+	public boolean login(String email, String passwaord) {
+		if (companyrepository.existsByEmailAndPassword(email, passwaord)) {
+			Company company = companyrepository.findByEmailAndPassword(email, passwaord);
+			// Company company = companyrepository.FindByEmailAndPassword(passwaord,
+			// passwaord).getId();
+			companyId = company.getId();
+			return true;
+		}
+		return false;
+//		return companyrepository.isCompanyExistsByEmailAndPassword(email, passwaord);
+
+	}
+
+//	public int addCoupon(Company company, Coupon coupon) {	
+	public void addCoupon(Coupon coupon) throws CouponSystemException {
+		if (this.couponrepository.existsByCompanyIdAndTitle(companyId, coupon.getTitle())) {
+			throw new CouponSystemException("addCoupon faild - coupon already exist for this company ");
+		}	
+//		if (couponrepository.existsByTitle(coupon.getTitle())) {
+//			// ompanyrepository.ExistsByNameOrEmail(company.getName(), company.getEmail()))
+//			throw new CouponSystemException("addCoupon faild - coupon with this title already exist ");
+//		}
+
+		Company company = companyrepository.findById(companyId).get();
+		company.addCoupon(coupon);
+
+	}
+
+	//int companyId
+	public void UpdateCoupon(Coupon coupon) throws CouponSystemException {
+		Optional<Coupon> opt = this.couponrepository.findById(coupon.getId());
+		if (opt.isEmpty()) {
+			throw new CouponSystemException("UpdateCoupon faild - coupon not found");
+		}
+		Coupon couponFromDb = opt.get();
+//		if (couponFromDb.getId() != companyId) {
+//			throw new CouponSystemException("UpdateCoupon faild - coupon not belong to this company");
+//		}
+		couponFromDb.setAmount(coupon.getAmount());
+		couponFromDb.setCategory(coupon.getCategory());
+		couponFromDb.setDescription(coupon.getDescription());
+		couponFromDb.setStartDate(coupon.getStartDate());
+		couponFromDb.setEndDate(coupon.getEndDate());
+		couponFromDb.setImage(coupon.getImage());
+		couponFromDb.setPrice(coupon.getPrice());
+		couponFromDb.setTitle(coupon.getTitle());
+
+	}
+//	public void deleteCoupon(Coupon coupon) throws CouponSystemException {
+	public void deleteCoupon(int couponId, int companyId) throws CouponSystemException {
+		
+//			Optional<Coupon> opt = this.couponrepository.findById(coupon.getId());
+		Optional<Coupon> opt = this.couponrepository.findById(couponId);
+	if (opt.isEmpty()) {
+			throw new CouponSystemException("deleteCoupon faild - coupon not found");
+		}
+		Coupon couponFromDb = opt.get();
+//		if(companyId == 0) {
+//		throw new CouponSystemException("compamy id = 0");
+//
+//		}
+		
+//		if(couponrepository.existsByIdAndCustomersId(couponId, customerId)){
+//			 throw new CouponSystemException("PurchaseCoupon faild - coupon exists for this CustomerId");		
+//			}
+		
+		
+		if (!couponrepository.existsByIdAndCompanyId(couponId, companyId )) 			
+			{
+						throw new CouponSystemException("eleteCoupon faild - coupon not belong to this company");
+				}
+//		if (couponFromDb.getId() != companyId) 			
+//{
+//			throw new CouponSystemException("eleteCoupon faild - coupon not belong to this company");
+//		}
+
+//			couponrepository.deleteById(coupon.getId());
+		couponrepository.deleteById(couponId);
+		System.out.println("coupon deleted");
+		System.out.println(couponrepository.findById(couponId));
+		// couponrepository.delete(coupon);		
+		
+	}
+	
+
+	public List<Coupon> getCompanyCoupons(Category category) throws CouponSystemException {
+		if (couponrepository.findByCompanyIdAndCategory(companyId, category).isEmpty()) {
+			throw new CouponSystemException(
+					"getCompanyCoupons faild - Coupons not found in this category for this company");
+		} else {
+			return new ArrayList<Coupon>(couponrepository.findByCompanyIdAndCategory(companyId, category));
+		}
+	}
+
+	public List<Coupon> getCompanyCouponsByPrice(double maxPrice) throws CouponSystemException {
+		if (couponrepository.findByCompanyIdAndPriceLessThan(companyId, maxPrice).isEmpty()) {
+			throw new CouponSystemException("getCompanyCoupons faild - company not found");
+		} else {
+			return new ArrayList<Coupon>(couponrepository.findByCompanyIdAndPriceLessThan(companyId, maxPrice));
+		}
+	}
+
+//	public Optional<Coupon> getAllCompanyCoupons(int companyId, int couponId) {
+	public List<Coupon> getAllCompanyCoupons() throws CouponSystemException {
+		if (couponrepository.findCouponsByCompanyId(companyId).isEmpty()) {
+			throw new CouponSystemException("getAllCompanyCoupons faild - no coupons found for this company");
+
+		} else {
+
+		}
+		return new ArrayList<Coupon>(couponrepository.findCouponsByCompanyId(companyId));
+	}
+
+	public Company getCompanyDetails(int comanyId) throws CouponSystemException {
+		Optional<Company> opt = this.companyrepository.findById(comanyId);
+		if (opt.isEmpty()) {
+			throw new CouponSystemException("getCompanyDetails faild - company with this id not found");
+		}
+
+		return opt.get();
+
+	}
+
+}

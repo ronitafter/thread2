@@ -1,0 +1,156 @@
+package com.ronit.test;
+
+import java.sql.Date;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.context.ApplicationContext;
+import org.springframework.stereotype.Component;
+
+import com.ronit.entities.Company;
+import com.ronit.entities.Coupon;
+import com.ronit.entities.Customer;
+import com.ronit.enums.Category;
+import com.ronit.enums.ClientType;
+import com.ronit.exceptions.CouponSystemException;
+import com.ronit.services.AdminService;
+import com.ronit.utils.LoginManager;
+
+@Component
+public class AdminTester implements CommandLineRunner {
+	int companyID;
+
+	@Autowired
+	private ApplicationContext context;
+
+	@Override
+	public void run(String... args) throws Exception {
+		startAdminTest();
+	}
+
+	public void startAdminTest() {
+//		ApplicationContext context = SpringApplication.run(MainAdmin.class);
+//		context.getBean(AdminService.class);
+//		SpringApplication.run(Main.class);
+//		System.out.println(Arrays.toString(Category.values()));
+
+		LoginManager loginManager = context.getBean(LoginManager.class);
+		try {
+			AdminService adminService = (AdminService) loginManager.login("admin@admin.com", "admin",
+					ClientType.ADMINISTRATOR);
+			
+// -------------- COMPANY TESTING --------------
+//deleteCompany
+//			deleteCompany(adminService);			
+//			printCompanies(adminService);
+//createCompany:
+//			createCompany(adminService);
+//updateCompany:
+//			updateCompany(adminService);        
+//getOneCompany:
+//			Company c = getOneCompany(adminService);
+//			System.out.println(c);
+//getAllCompanies:
+//			List<Company> companies = adminService.getAllCompanies();
+//			System.out.println(companies);
+// -------------- CUSTOMER TESTING --------------
+//ddCustomer:
+//			addCustomer(adminService);
+//updateCustomer:
+//			updateCustomer(adminService);
+//deleteCustomer:
+//			deleteCustomer(adminService);
+//getOneCustomer:
+//			Customer c = getOneCustomer(adminService);
+//			System.out.println(c);
+//getAllCustomers:
+//			List<Customer> customers = adminService.getAllCustomers();
+//			System.out.println(customers);
+
+		} catch (CouponSystemException e) {
+			System.out.println("====== Error ========================");
+			System.out.println(e.getMessage());
+			System.out.println("====== ===== ========================");
+//			e.printStackTrace();
+		}
+
+	}
+
+// *************************** COMPANY ********************************************
+	static void createCompany(AdminService adminService) throws CouponSystemException {
+		List<Coupon> coupons = new ArrayList<Coupon>();
+		coupons.add(new Coupon(Category.FOOD, "title12", "description", Date.valueOf("2021-12-12"),
+				Date.valueOf("2021-12-22"), 5, 10.0, "image"));
+		coupons.add(new Coupon(Category.RESTAURANT, "title120", "description", Date.valueOf("2021-12-12"),
+				Date.valueOf("2021-12-22"), 5, 10.0, "image"));
+		Company b = new Company("kkk", "kkk@", "kkk123", coupons);
+		adminService.addCompany(b);
+		System.out.println("company added");
+		System.out.println(b);
+	}
+
+	static void printCompanies(AdminService adminService) {
+		List<Company> companies = adminService.getAllCompanies();
+		System.out.println(companies);
+	}
+
+	static void updateCompany(AdminService adminService) throws CouponSystemException {
+//		List<Coupon> coupons = new ArrayList<Coupon>();
+//		coupons.add(new Coupon("testing123", Date.valueOf("2021-10-10")));
+//		Company company = new Company(1,"AAA", "@@@", "A123");
+		Company company = new Company(1, "company1", "company1@mail", "company1123");
+		adminService.updateCompany(company);
+		System.out.println(company);
+	}
+
+// -------------------------- DELETE COMPANY -----------------------------------------
+	public void deleteCompany(AdminService adminService) throws CouponSystemException {
+		adminService.deleteCompany(10);
+		System.out.println("company deleted");
+	}
+// -------------------------- getOneCompany -----------------------------------------
+
+	public Company getOneCompany(AdminService adminService) throws CouponSystemException {
+		return adminService.getOneCompany(2);
+	}
+// -------------------------- getAllCompanies -----------------------------------------
+
+	public List<Company> getAllCompanies(AdminService adminService) {
+		return adminService.getAllCompanies();
+	}
+
+// *************************** CUSTOMER ********************************************
+// -------------------------- addCustomer -----------------------------------------
+	public void addCustomer(AdminService adminService) throws CouponSystemException {
+		Customer customer = new Customer("aaa", "aaaaaa", "aaa@", "aaa123");
+		adminService.addCustomer(customer);
+		System.out.println(customer);
+
+	}
+// -------------------------- DELETE COMPANY -----------------------------------------
+	public void deleteCustomer(AdminService adminService) throws CouponSystemException {
+		adminService.deleteCustomer(4);
+		System.out.println("customer deleted");
+
+	}
+// -------------------------- DELETE COMPANY -----------------------------------------
+	public void updateCustomer(AdminService adminService) throws CouponSystemException {
+		Customer customer = new Customer(2, "aaa","AAA", "aaa@mail", "AAA123");
+		adminService.updateCustomer(customer);
+		System.out.println(customer);
+	}
+// -------------------------- DELETE COMPANY -----------------------------------------
+	public Customer getOneCustomer(AdminService adminService) throws CouponSystemException {
+		return adminService.getOneCustomer(3);
+	}
+// -------------------------- getOneCustomer -----------------------------------------
+	public List<Customer> getAllCustomers(AdminService adminService) {
+		return adminService.getAllCustomers();
+	}
+
+
+	}
+

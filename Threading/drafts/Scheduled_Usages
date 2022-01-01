@@ -1,0 +1,82 @@
+package com.ronit.job;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import com.ronit.repositories.CouponRepository;
+
+//@Component
+public class Scheduled_Usages {
+
+//	************* Scheduled Usages *************
+	
+	private Thread thread;
+	@Autowired
+	private CouponRepository couponRepository;
+	private static final long TWENTY_FOUR_HOURS = 1000 * 60 * 60 * 24;
+	
+// cron
+	@Scheduled(cron = "*/5 * * * * ?")
+	public void Scheduled_Usages2() {
+		System.out.println("Method executed at every 5 seconds. Current time is :" + new Date());
+	}
+	
+
+	@Scheduled(cron = "0 2 21 * * ?")
+	public void doSomthing() {
+		System.out.println(Calendar.getInstance().getTime() + "starting job doSomthing");
+		try {
+			Thread.sleep(1000*8);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		System.out.println(Calendar.getInstance().getTime() + "finished job doSomthing");
+	}
+//	
+//	
+// fixedDelay
+//	@Scheduled(fixedDelay = 30000)
+//	public void Scheduled_Usages0() {
+//
+//		System.out.println("Method executed at every 5 seconds. Current time is: " + new Date());
+//	}
+//
+// fixedRate
+//	@Scheduled(fixedRate = 30000)
+//	public void Scheduled_Usages1() {
+//
+//	}
+
+
+
+
+
+
+// Scheduled(fixedRate
+
+//	@Scheduled(fixedRate = TWENTY_FOUR_HOURS)
+//	public void run() {
+//		System.out.println(">>> " + Thread.currentThread().getName() + "  started");
+//		while(true) {
+//			try {
+////				TimeUnit.HOURS.sleep(24); // for production
+//				TimeUnit.SECONDS.sleep(5); // for testing
+//			} catch (InterruptedException e) {
+//				break;
+//			}
+//			System.out.println(">>> " + Thread.currentThread().getName() + "  is now deleting expired coupons");
+//			couponRepository.deleteExpiredCoupons();
+//		}
+//		System.out.println(">>> " + Thread.currentThread().getName() + "  stop");
+//	}
+
+}
